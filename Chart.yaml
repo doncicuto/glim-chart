@@ -1,0 +1,6 @@
+apiVersion: v2
+name: glim
+description: A Helm chart for Glim, a simple identity access management system that speaks some LDAP
+type: application
+version: 0.1.0
+appVersion: "0.4.0-alpha"
