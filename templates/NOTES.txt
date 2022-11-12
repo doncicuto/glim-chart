@@ -1,22 +1,37 @@
-1. Get the application URL by running these commands:
-{{- if .Values.ingress.enabled }}
-{{- range $host := .Values.ingress.hosts }}
-  {{- range .paths }}
-  http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host.host }}{{ .path }}
-  {{- end }}
-{{- end }}
-{{- else if contains "NodePort" .Values.service.type }}
-  export NODE_PORT=$(kubectl get --namespace {{ .Release.Namespace }} -o jsonpath="{.spec.ports[0].nodePort}" services {{ include "glim.fullname" . }})
-  export NODE_IP=$(kubectl get nodes --namespace {{ .Release.Namespace }} -o jsonpath="{.items[0].status.addresses[0].address}")
-  echo http://$NODE_IP:$NODE_PORT
-{{- else if contains "LoadBalancer" .Values.service.type }}
-     NOTE: It may take a few minutes for the LoadBalancer IP to be available.
-           You can watch the status of by running 'kubectl get --namespace {{ .Release.Namespace }} svc -w {{ include "glim.fullname" . }}'
-  export SERVICE_IP=$(kubectl get svc --namespace {{ .Release.Namespace }} {{ include "glim.fullname" . }} --template "{{"{{ range (index .status.loadBalancer.ingress 0) }}{{.}}{{ end }}"}}")
-  echo http://$SERVICE_IP:{{ .Values.service.port }}
-{{- else if contains "ClusterIP" .Values.service.type }}
+
+🏆 Glim has been installed. 
+
+You can access Glim REST server from within the k8s cluster using:
+
+  {{ template "glim.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.apiPort }}
+
+You can access Glim LDAP server from within the k8s cluster using:
+
+  {{ template "glim.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local:{{ .Values.service.ldapPort }}
+
+You can access Glim's admin and search accounts passwords using:
+
+  kubectl get secret --namespace {{ .Release.Namespace }} {{ template "glim.secretName" . }} -o jsonpath="{.data.GLIM_INITIAL_ADMIN_PASSWD}" | base64 --decode; echo
+  kubectl get secret --namespace {{ .Release.Namespace }} {{ template "glim.secretName" . }} -o jsonpath="{.data.GLIM_INITIAL_SEARCH_PASSWD}" | base64 --decode; echo
+
+You can access Glim's API secret using:
+
+  kubectl get secret --namespace {{ .Release.Namespace }} {{ template "glim.secretName" . }} -o jsonpath="{.data.GLIM_API_SECRET}" | base64 --decode; echo
+
+Start running Glim commands either opening a shell:
   export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "glim.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
-  export CONTAINER_PORT=$(kubectl get pod --namespace {{ .Release.Namespace }} $POD_NAME -o jsonpath="{.spec.containers[0].ports[0].containerPort}")
-  echo "Visit http://127.0.0.1:8080 to use your application"
-  kubectl --namespace {{ .Release.Namespace }} port-forward $POD_NAME 8080:$CONTAINER_PORT
-{{- end }}
+  kubectl exec -it $POD_NAME --namespace {{ .Release.Namespace }} -- /bin/sh
+
+  Run Glim commands: 
+  $ glim login
+  $ glim user
+
+Or download glim to your computer, get auto generated CA file and use port-forward
+  export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "glim.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
+  kubectl cp {{ .Release.Namespace }}/$POD_NAME:/home/glim/.glim/ca.pem /tmp/ca.pem
+  kubectl port-forward --namespace {{ .Release.Namespace }} $POD_NAME 1323:1323
+
+  Run Glim commands:
+  $ glim login --tlscacert /tmp/ca.pem
+  $ glim user --tlscacert /tmp/ca.pem
+

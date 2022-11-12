@@ -5,9 +5,7 @@ metadata:
   labels:
     {{- include "glim.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
   replicas: {{ .Values.replicaCount }}
-  {{- end }}
   selector:
     matchLabels:
       {{- include "glim.selectorLabels" . | nindent 6 }}
@@ -24,7 +22,6 @@ spec:
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-      serviceAccountName: {{ include "glim.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
@@ -33,19 +30,32 @@ spec:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env: 
+            - name: GLIM_API_PORT
+              value: "{{ .Values.service.apiPort }}"
+            - name: GLIM_LDAP_PORT
+              value: "{{ .Values.service.ldapPort }}" 
+          envFrom:
+            - configMapRef:
+                name: {{ template "glim.fullname" . }}-env
+            - secretRef:
+                name: {{ template "glim.secretName" . }}
           ports:
-            - name: rest
-              containerPort: 1323
+            - name: rest-port
+              containerPort: {{ .Values.service.apiPort }}
+              protocol: TCP
+            - name: ldap-port
+              containerPort: {{ .Values.service.ldapPort }}
               protocol: TCP
           livenessProbe:
             httpGet:
               path: /v1/healthz
-              port: rest
+              port: {{ .Values.service.apiPort }}
               scheme: HTTPS
           readinessProbe:
             httpGet:
               path: /v1/readyz
-              port: rest
+              port: {{ .Values.service.apiPort }}
               scheme: HTTPS
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

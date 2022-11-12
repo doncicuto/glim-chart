@@ -60,3 +60,10 @@ Create the name of the service account to use
 {{- default "default" .Values.serviceAccount.name }}
 {{- end }}
 {{- end }}
+
+{{/*
+Generate chart secret name
+*/}}
+{{- define "glim.secretName" -}}
+{{ default (include "glim.fullname" .) .Values.existingSecret }}
+{{- end -}}

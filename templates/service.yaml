@@ -1,15 +1,42 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ include "glim.fullname" . }}
+{{- if .Values.service.annotations }}
+  annotations:
+{{ toYaml .Values.service.annotations | indent 4 }}
+{{- end }}
+  name: {{ template "glim.fullname" . }}
   labels:
-    {{- include "glim.labels" . | nindent 4 }}
+    app: {{ template "glim.name" . }}
+    chart: {{ template "glim.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+{{- if .Values.extraLabels }}
+{{ toYaml .Values.extraLabels | indent 4 }}
+{{- end }}
 spec:
-  type: {{ .Values.service.type }}
+  clusterIP: {{ .Values.service.clusterIP | quote }}
+{{- if .Values.service.externalIPs }}
+  externalIPs:
+{{ toYaml .Values.service.externalIPs | indent 4 }}
+{{- end }}
+{{- if .Values.service.loadBalancerIP }}
+  loadBalancerIP: {{ .Values.service.loadBalancerIP | quote }}
+{{- end }}
+{{- if .Values.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+{{ toYaml .Values.service.loadBalancerSourceRanges | indent 4 }}
+{{- end }}
   ports:
-    - port: {{ .Values.service.port }}
-      targetPort: http
+    - name: ldap
       protocol: TCP
-      name: http
+      port: {{ .Values.service.ldapPort }}
+      targetPort: ldap-port
+    - name: rest
+      protocol: TCP
+      port: {{ .Values.service.apiPort }}
+      targetPort: rest-port
   selector:
-    {{- include "glim.selectorLabels" . | nindent 4 }}
+    app: {{ template "glim.name" . }}
+    release: {{ .Release.Name }}
+  type: {{ .Values.service.type }}
