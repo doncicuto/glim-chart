@@ -2,7 +2,7 @@
 
 ## Disclaimer
 
-This chart is heavily inspired by this repository: [https://git.app.uib.no/caleno/helm-charts/-/tree/fb701bdd3f991abd6600967f6ce66e05325c34ac/stable/openldap](https://git.app.uib.no/caleno/helm-charts/-/tree/fb701bdd3f991abd6600967f6ce66e05325c34ac/stable/openldap)
+This chart is heavily inspired by code found in this repository: [https://git.app.uib.no/caleno/helm-charts/-/tree/fb701bdd3f991abd6600967f6ce66e05325c34ac/stable/openldap](https://git.app.uib.no/caleno/helm-charts/-/tree/fb701bdd3f991abd6600967f6ce66e05325c34ac/stable/openldap).
 
 ## Prerequisites Details
 
@@ -77,16 +77,3 @@ kubectl delete pvc -l release=${RELEASE-NAME}
 ## Custom Secret
 
 `existingSecret` can be used to override the default secret.yaml provided
-
-## Testing
-
-Helm tests are included and they confirm connection to slapd.
-
-```bash
-helm install . --set test.enabled=true
-helm test <RELEASE_NAME>
-RUNNING: foolish-mouse-openldap-service-test-akmms
-PASSED: foolish-mouse-openldap-service-test-akmms
-```
-
-It will confirm that we can do an ldapsearch with the default credentials
