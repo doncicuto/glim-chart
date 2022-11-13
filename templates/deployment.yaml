@@ -40,6 +40,9 @@ spec:
                 name: {{ template "glim.fullname" . }}-env
             - secretRef:
                 name: {{ template "glim.secretName" . }}
+          volumeMounts:
+            - name: data
+              mountPath: /home/glim/.glim
           ports:
             - name: rest-port
               containerPort: {{ .Values.service.apiPort }}
@@ -71,3 +74,12 @@ spec:
       tolerations:
         {{- toYaml . | nindent 8 }}
       {{- end }}
+      volumes:
+      - name: data
+      {{- if .Values.persistence.enabled }}
+        persistentVolumeClaim:
+          claimName: {{ .Values.persistence.existingClaim | default (include "glim.fullname" .) }}
+      {{- else }}
+        emptyDir: {}
+      {{- end -}}
+

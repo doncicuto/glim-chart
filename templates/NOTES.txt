@@ -26,7 +26,7 @@ Start running Glim commands either opening a shell:
   $ glim login
   $ glim user
 
-Or download glim to your computer, get auto generated CA file and use port-forward
+Or download glim binary to your computer visiting the Releases page at: https://github.com/doncicuto/glim/releases, get auto generated CA file and use port-forward
   export POD_NAME=$(kubectl get pods --namespace {{ .Release.Namespace }} -l "app.kubernetes.io/name={{ include "glim.name" . }},app.kubernetes.io/instance={{ .Release.Name }}" -o jsonpath="{.items[0].metadata.name}")
   kubectl cp {{ .Release.Namespace }}/$POD_NAME:/home/glim/.glim/ca.pem /tmp/ca.pem
   kubectl port-forward --namespace {{ .Release.Namespace }} $POD_NAME 1323:1323

@@ -46,9 +46,9 @@ existingSecret: ""
 
 # Default passwords and REST API secret to use, stored as a secret. If unset,
 # passwords and secret are auto-generated.
-# adminPassword: admin
-# searchPassword: search
-# apiSecret: secret
+adminPassword: admin
+searchPassword: search
+apiSecret: secret
 
 ## Persist data to a persistent volume
 persistence:
@@ -60,12 +60,6 @@ persistence:
   ##   set, choosing the default provisioner.  (gp2 on AWS, standard on
   ##   GKE, AWS & OpenStack)
   ##
-  # storageClass: "-"
-  accessMode: ReadWriteOnce
-  size: 100Mi
-## test container details
-# test:
-#   enabled: false
-#   image:
-#     repository: dduportal/bats
-#     tag: 0.4.0
+  ##storageClass: "-"
+  ##accessMode: ReadWriteOnce
+  ##size: 50Mi

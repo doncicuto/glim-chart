@@ -49,10 +49,8 @@ The following table lists the configurable parameters of the Glim chart and thei
 | `persistence.storageClass`         | Storage class for PersistentVolumes.                                      | `<unset>`         |
 | `persistence.accessMode`           | Access mode for PersistentVolumes                                         | `ReadWriteOnce`   |
 | `persistence.size`                 | PersistentVolumeClaim storage size                                        | `100Mi`             |
+| `persistence.existingClaim`                 | Existing PersistentVolumeClaim to be used size                                        | `<unset>`             |
 | `resources`                        | Container resource requests and limits in yaml                            | `{}`              |
-| `test.enabled`                     | Conditionally provision test resources                                    | `false`           |
-| `test.image.repository`            | Test container image requires bats framework                              | `dduportal/bats`  |
-| `test.image.tag`                   | Test container tag                                                        | `0.4.0`           |
 
 Specify each parameter using the `--set key=value[,key=value]` argument to `helm install`.
 
